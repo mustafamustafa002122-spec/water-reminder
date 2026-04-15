@@ -32,6 +32,11 @@ export default function Home() {
         return;
       }
 
+      if (!window.isSecureContext) {
+        setStatus("This feature requires HTTPS on iPhone. Deploy and open with https://");
+        return;
+      }
+
       const reg = await navigator.serviceWorker.register("/service-worker.js");
 
       setStatus("2) requesting notification permission...");
@@ -109,7 +114,7 @@ export default function Home() {
 
       <hr style={{ marginTop: 24 }} />
       <p style={{ fontSize: 14, opacity: 0.8 }}>
-        iPhone: Safari → Share → Add to Home Screen → open from the icon → Enable reminders.
+        iPhone: open over HTTPS in Safari, Share → Add to Home Screen, then open from the icon and tap Enable reminders.
       </p>
     </main>
   );

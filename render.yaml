@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: water-reminder-api
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true
