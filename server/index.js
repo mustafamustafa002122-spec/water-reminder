@@ -29,27 +29,133 @@ function requireEnv(name) {
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-const reminderMessages = [
-  { title: "Hydration break, Zehra", body: "Tiny sip, big focus. Your next great lesson starts with water." },
-  { title: "A quick water note", body: "Fun fact: The word 'alphabet' comes from alpha + beta." },
-  { title: "Study pause", body: "Sip time. Shakespeare coined hundreds of words still used today." },
-  { title: "Refresh moment", body: "Hydrate and continue. Virginia Woolf wrote in standing bursts." },
-  { title: "Water + wisdom", body: "Short quote: 'Words are our most inexhaustible source of magic.' - Dumbledore" },
-  { title: "A sip for your thesis", body: "Language fact: English borrowed many words from French after 1066." },
-  { title: "Hydrate, teacher", body: "Quick quote: 'No tears in the writer, no tears in the reader.' - Frost" },
-  { title: "Little reminder", body: "Water first. Then one more brilliant paragraph." },
-  { title: "Mind and body check", body: "Hydration helps attention, memory, and reading stamina." },
-  { title: "Tea can wait", body: "One glass of water now, then back to beautiful literature." },
-  { title: "Sips and syntax", body: "Linguistics note: Context can change meaning more than grammar does." },
-  { title: "Zehra, breathe and sip", body: "Quote: 'I am no bird; and no net ensnares me.' - Jane Eyre" },
-  { title: "Hydration checkpoint", body: "A small habit repeated daily beats a perfect plan once." },
-  { title: "Reading fuel", body: "Take a few sips. Your students deserve your brightest energy." },
-  { title: "Master's mode", body: "Water, then work. You are building something meaningful." },
+const curatedSeedMessages = [
+  { title: "Jane Austen", body: "\"There is no charm equal to tenderness of heart.\" + one gentle sip." },
+  { title: "Jane Austen", body: "\"Think only of the past as its remembrance gives you pleasure.\" Sip onward." },
+  { title: "Jane Austen", body: "\"I declare after all there is no enjoyment like reading!\" Hydrate and read on." },
+  { title: "Charlotte Bronte", body: "\"I am no bird; and no net ensnares me.\" Drink, then fly." },
+  { title: "Charlotte Bronte", body: "\"Life appears to me too short to be spent in nursing animosity.\" Choose water." },
+  { title: "James Joyce", body: "\"Mistakes are the portals of discovery.\" A sip is never a mistake." },
+  { title: "Mark Twain", body: "\"The secret of getting ahead is getting started.\" Start with water." },
+  { title: "Virginia Woolf", body: "\"No need to hurry. No need to sparkle.\" Just hydrate and continue." },
+  { title: "Shakespeare", body: "\"To thine own self be true.\" Also, be true to hydration." },
+  { title: "Emily Dickinson", body: "\"Forever is composed of nows.\" This now asks for a sip." },
+  { title: "Oscar Wilde", body: "\"Be yourself; everyone else is already taken.\" So is this glass of water." },
+  { title: "Literary wink", body: "Plot twist: the heroine paused, drank water, and won the chapter." },
+  { title: "Teacher mode", body: "Hydrate now, explain brilliantly later." },
+  { title: "Poetry pause", body: "Line break. Sip break." },
+  { title: "Quiet brilliance", body: "A page, a quote, a sip. Repeat." },
 ];
 
-function pickReminderMessage() {
-  const i = Math.floor(Math.random() * reminderMessages.length);
-  return reminderMessages[i];
+const literarySnippets = [
+  { author: "Jane Austen", quote: "\"There is no enjoyment like reading.\"" },
+  { author: "Jane Austen", quote: "\"I must learn to be content with being happier than I deserve.\"" },
+  { author: "Charlotte Bronte", quote: "\"I am no bird; and no net ensnares me.\"" },
+  { author: "Charlotte Bronte", quote: "\"Life appears to me too short to be spent in nursing animosity.\"" },
+  { author: "James Joyce", quote: "\"Mistakes are the portals of discovery.\"" },
+  { author: "James Joyce", quote: "\"Think you're escaping and run into yourself.\"" },
+  { author: "Mark Twain", quote: "\"The secret of getting ahead is getting started.\"" },
+  { author: "Mark Twain", quote: "\"Good friends, good books, and a sleepy conscience.\"" },
+  { author: "Virginia Woolf", quote: "\"No need to hurry. No need to sparkle.\"" },
+  { author: "Virginia Woolf", quote: "\"Arrange whatever pieces come your way.\"" },
+  { author: "Shakespeare", quote: "\"To thine own self be true.\"" },
+  { author: "Shakespeare", quote: "\"All the world's a stage.\"" },
+  { author: "Emily Dickinson", quote: "\"Forever is composed of nows.\"" },
+  { author: "Emily Dickinson", quote: "\"Hope is the thing with feathers.\"" },
+  { author: "T. S. Eliot", quote: "\"Only those who risk going too far can find out how far one can go.\"" },
+  { author: "Oscar Wilde", quote: "\"Be yourself; everyone else is already taken.\"" },
+  { author: "George Eliot", quote: "\"It is never too late to be what you might have been.\"" },
+  { author: "Mary Shelley", quote: "\"Beware; for I am fearless, and therefore powerful.\"" },
+  { author: "W. B. Yeats", quote: "\"There are no strangers here; only friends you haven't yet met.\"" },
+  { author: "Samuel Beckett", quote: "\"Ever tried. Ever failed. No matter. Try again.\"" },
+];
+
+const hydratePrompts = [
+  "Take one calm sip and keep going.",
+  "A little water for a clearer sentence.",
+  "Hydrate first, then annotate.",
+  "Sip once before the next paragraph.",
+  "A brief water pause, then brilliance.",
+  "Let this be your gentle hydration cue.",
+  "One sip for focus, one for calm.",
+  "Drink water and return to the page.",
+  "A tiny sip can rescue a long thought.",
+  "Pause, breathe, sip, continue.",
+];
+
+const playfulClosers = [
+  "Your water bottle approves.",
+  "Main-character energy unlocked.",
+  "The plot definitely improves after hydration.",
+  "Scholarly elegance, now with extra water.",
+  "Your thesis called; it said thanks.",
+  "This is your intermission bell.",
+  "Coffee is lovely; water is loyal.",
+  "A sip today saves dramatic sighs later.",
+  "The next idea is waiting right after this sip.",
+  "Hydration is the quiet co-author.",
+];
+
+function buildReminderMessages(targetCount = 365) {
+  const output = [];
+  const seen = new Set();
+
+  function addMessage(message) {
+    const key = `${message.title}__${message.body}`;
+    if (seen.has(key)) return;
+    seen.add(key);
+    output.push(message);
+  }
+
+  for (const message of curatedSeedMessages) {
+    addMessage(message);
+  }
+
+  for (const snippet of literarySnippets) {
+    for (const prompt of hydratePrompts) {
+      for (const closer of playfulClosers) {
+        if (output.length >= targetCount) break;
+        addMessage({
+          title: snippet.author,
+          body: `${snippet.quote} ${prompt} ${closer}`,
+        });
+      }
+      if (output.length >= targetCount) break;
+    }
+    if (output.length >= targetCount) break;
+  }
+
+  if (output.length < targetCount) {
+    throw new Error(`Unable to build ${targetCount} unique reminder messages.`);
+  }
+
+  return output.slice(0, targetCount);
+}
+
+const reminderMessages = buildReminderMessages(365);
+
+const lastMessageByEndpoint = new Map();
+
+function hashString(input) {
+  let hash = 0;
+  for (let i = 0; i < input.length; i++) {
+    hash = (hash * 31 + input.charCodeAt(i)) >>> 0;
+  }
+  return hash;
+}
+
+function pickReminderMessage(endpoint = "") {
+  const seed = hashString(`${endpoint}-${Date.now()}-${Math.random()}`);
+  let index = seed % reminderMessages.length;
+  const lastIndex = lastMessageByEndpoint.get(endpoint);
+
+  // Avoid back-to-back repeats for the same subscription.
+  if (lastIndex === index) {
+    index = (index + 1) % reminderMessages.length;
+  }
+
+  lastMessageByEndpoint.set(endpoint, index);
+  return reminderMessages[index];
 }
 
 webpush.setVapidDetails(
@@ -136,7 +242,7 @@ app.post("/send-due", async (req, res) => {
       }
 
       try {
-        const message = pickReminderMessage();
+        const message = pickReminderMessage(row.endpoint || "");
         await webpush.sendNotification(
           row.subscription,
           JSON.stringify({

@@ -20,39 +20,39 @@ export default function Home() {
 
   async function enableReminders() {
     try {
-      setStatus("1) registering service worker...");
+      setStatus("Preparing your next lovely reminder...");
 
       if (!apiBase || !vapidPublicKey) {
-        setStatus("Missing env vars: NEXT_PUBLIC_API_BASE or NEXT_PUBLIC_VAPID_PUBLIC_KEY");
+        setStatus("A small setup detail is missing. Please try again in a moment.");
         return;
       }
 
       if (!("serviceWorker" in navigator)) {
-        setStatus("Service Worker not supported.");
+        setStatus("This browser is not ready for these reminders yet.");
         return;
       }
 
       if (!window.isSecureContext) {
-        setStatus("This feature requires HTTPS on iPhone. Deploy and open with https://");
+        setStatus("Please open the secure app link to continue.");
         return;
       }
 
       const reg = await navigator.serviceWorker.register("/service-worker.js");
 
-      setStatus("2) requesting notification permission...");
+      setStatus("Almost there... asking for notification permission.");
       const perm = await Notification.requestPermission();
       if (perm !== "granted") {
-        setStatus("Notifications not allowed.");
+        setStatus("No worries. You can allow notifications any time from settings.");
         return;
       }
 
-      setStatus("3) subscribing to push...");
+      setStatus("Setting your reading-and-hydration rhythm...");
       const sub = await reg.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(vapidPublicKey),
       });
 
-      setStatus("4) sending subscription to server...");
+      setStatus("Saving your reminder style...");
       const resp = await fetch(`${apiBase}/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -67,13 +67,13 @@ export default function Home() {
 
       const json = await resp.json().catch(() => ({}));
       if (!resp.ok) {
-        setStatus(`Register failed: ${json?.error || resp.statusText}`);
+        setStatus("Something interrupted the setup. Please try once more.");
         return;
       }
 
-      setStatus("✅ Reminders enabled!");
+      setStatus("Done. Your quote-filled water reminders are ready.");
     } catch (e) {
-      setStatus(`Error: ${String(e)}`);
+      setStatus("A brief hiccup happened. Please try again.");
     }
   }
 
@@ -127,14 +127,14 @@ export default function Home() {
           fontWeight: 600,
         }}
       >
-        Enable reminders
+        Start reminders
       </button>
 
       <p style={{ marginTop: 12, minHeight: 24 }}>{status}</p>
 
       <hr style={{ marginTop: 24 }} />
       <p style={{ fontSize: 14, opacity: 0.8 }}>
-        iPhone: open in Safari, Share -&gt; Add to Home Screen, open from the icon, then tap Enable reminders.
+        Open from your home screen and enjoy little literary nudges through the day.
       </p>
     </main>
   );
