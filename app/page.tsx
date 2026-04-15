@@ -78,22 +78,39 @@ export default function Home() {
   }
 
   return (
-    <main style={{ maxWidth: 520, margin: "40px auto", fontFamily: "Arial", padding: 16 }}>
-      <h1>💧 Water Reminder</h1>
+    <main
+      style={{
+        maxWidth: 560,
+        margin: "40px auto",
+        padding: 20,
+        borderRadius: 20,
+        border: "1px solid #f4d8df",
+        background: "linear-gradient(180deg, #fff9fb 0%, #fff 100%)",
+        boxShadow: "0 6px 30px rgba(255, 79, 129, 0.08)",
+      }}
+    >
+      <h1 style={{ fontSize: 32, marginBottom: 4 }}>💧 Zehra's Water Notes</h1>
 
       <p style={{ marginTop: 8, opacity: 0.8 }}>
-        Set a reminder interval, then enable notifications.
+        Gentle hydration reminders with tiny literature and language sparks.
       </p>
 
-      <label style={{ display: "block", marginTop: 12 }}>
-        Every (minutes):
+      <label style={{ display: "block", marginTop: 16, fontWeight: 600 }}>
+        Reminder every (minutes):
         <input
           type="number"
           min={5}
           step={5}
           value={everyMinutes}
           onChange={(e) => setEveryMinutes(Number(e.target.value))}
-          style={{ marginLeft: 12, width: 100 }}
+          style={{
+            marginLeft: 12,
+            width: 110,
+            padding: "8px 10px",
+            borderRadius: 10,
+            border: "1px solid #f2b8c8",
+            background: "#fff",
+          }}
         />
       </label>
 
@@ -101,20 +118,23 @@ export default function Home() {
         onClick={enableReminders}
         style={{
           marginTop: 16,
-          padding: "10px 14px",
+          padding: "11px 16px",
           cursor: "pointer",
           borderRadius: 10,
-          border: "1px solid #ddd",
+          border: "1px solid #ff8fb1",
+          background: "#ff4f81",
+          color: "#fff",
+          fontWeight: 600,
         }}
       >
         Enable reminders
       </button>
 
-      <p style={{ marginTop: 12 }}>{status}</p>
+      <p style={{ marginTop: 12, minHeight: 24 }}>{status}</p>
 
       <hr style={{ marginTop: 24 }} />
       <p style={{ fontSize: 14, opacity: 0.8 }}>
-        iPhone: open over HTTPS in Safari, Share → Add to Home Screen, then open from the icon and tap Enable reminders.
+        iPhone: open in Safari, Share -&gt; Add to Home Screen, open from the icon, then tap Enable reminders.
       </p>
     </main>
   );

@@ -29,6 +29,29 @@ function requireEnv(name) {
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
+const reminderMessages = [
+  { title: "Hydration break, Zehra", body: "Tiny sip, big focus. Your next great lesson starts with water." },
+  { title: "A quick water note", body: "Fun fact: The word 'alphabet' comes from alpha + beta." },
+  { title: "Study pause", body: "Sip time. Shakespeare coined hundreds of words still used today." },
+  { title: "Refresh moment", body: "Hydrate and continue. Virginia Woolf wrote in standing bursts." },
+  { title: "Water + wisdom", body: "Short quote: 'Words are our most inexhaustible source of magic.' - Dumbledore" },
+  { title: "A sip for your thesis", body: "Language fact: English borrowed many words from French after 1066." },
+  { title: "Hydrate, teacher", body: "Quick quote: 'No tears in the writer, no tears in the reader.' - Frost" },
+  { title: "Little reminder", body: "Water first. Then one more brilliant paragraph." },
+  { title: "Mind and body check", body: "Hydration helps attention, memory, and reading stamina." },
+  { title: "Tea can wait", body: "One glass of water now, then back to beautiful literature." },
+  { title: "Sips and syntax", body: "Linguistics note: Context can change meaning more than grammar does." },
+  { title: "Zehra, breathe and sip", body: "Quote: 'I am no bird; and no net ensnares me.' - Jane Eyre" },
+  { title: "Hydration checkpoint", body: "A small habit repeated daily beats a perfect plan once." },
+  { title: "Reading fuel", body: "Take a few sips. Your students deserve your brightest energy." },
+  { title: "Master's mode", body: "Water, then work. You are building something meaningful." },
+];
+
+function pickReminderMessage() {
+  const i = Math.floor(Math.random() * reminderMessages.length);
+  return reminderMessages[i];
+}
+
 webpush.setVapidDetails(
   VAPID_SUBJECT,          // e.g. "mailto:you@example.com"
   VAPID_PUBLIC_KEY,
@@ -113,11 +136,12 @@ app.post("/send-due", async (req, res) => {
       }
 
       try {
+        const message = pickReminderMessage();
         await webpush.sendNotification(
           row.subscription,
           JSON.stringify({
-            title: "💧 Water time",
-            body: "Take a few sips ❤️",
+            title: message.title,
+            body: message.body,
             url: "/"
           })
         );
