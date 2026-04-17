@@ -239,15 +239,24 @@ const playfulClosers = [
   "Hydration is the quiet co-author.",
 ];
 
+function shuffleArray(array) {
+  const copy = [...array];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
 function buildReminderMessages(targetCount = 365) {
-  const output = [];
   const seen = new Set();
+  const allMessages = [];
 
   function addMessage(message) {
     const key = `${message.title}__${message.body}`;
     if (seen.has(key)) return;
     seen.add(key);
-    output.push(message);
+    allMessages.push(message);
   }
 
   for (const message of curatedSeedMessages) {
@@ -257,22 +266,22 @@ function buildReminderMessages(targetCount = 365) {
   for (const snippet of literarySnippets) {
     for (const prompt of hydratePrompts) {
       for (const closer of playfulClosers) {
-        if (output.length >= targetCount) break;
         addMessage({
           title: snippet.author,
           body: `${snippet.quote} ${prompt} ${closer}`,
         });
       }
-      if (output.length >= targetCount) break;
     }
-      if (output.length >= targetCount) break;
   }
 
-  if (output.length < targetCount) {
+  if (allMessages.length < targetCount) {
     throw new Error(`Unable to build ${targetCount} unique reminder messages.`);
   }
 
-  return output.slice(0, targetCount);
+  const seeds = allMessages.slice(0, curatedSeedMessages.length);
+  const rest = shuffleArray(allMessages.slice(curatedSeedMessages.length));
+
+  return [...seeds, ...rest].slice(0, targetCount);
 }
 
 const reminderMessages = buildReminderMessages(365);
